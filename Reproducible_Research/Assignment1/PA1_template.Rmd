@@ -1,0 +1,320 @@
+---
+title: 'Reproducible Research: Peer Assessment 1'
+output:
+  html_document:
+    keep_md: yes
+  pdf_document: default
+---
+
+Programming Assignment 1
+========================================================
+PART 1
+------
+```{r, echo=FALSE, comment="", tidy=TRUE, error=TRUE}
+set.seed(1234)
+today <- date()
+today <- unlist(strsplit(today, " "))
+cat("by Prateek Sarangi,", today[1], ",", today[2:3], today[5])
+```
+_**Abstract:**   This document represents the work for the **Programming Assignment 1** as  
+part of **Reproducible esearch** online class offered by **Coursera**._  
+
+## 1.1 Loading and preprocessing the data
+
+###    1.1.1  Read the raw data in R
+```{r, echo=TRUE, tidy=TRUE}
+activity_raw <- read.csv("/Users/ashwini/RepData_PeerAssessment1/activity.csv")
+```
+###    1.1.2  Eliminate the rows which contains NAs
+>>> This process is done in two steps:
+>>>1.   Detect the rows that contain NAs  
+2.   Eliminate the rows with NAs( detected by step 1) from the raw data  
+
+```{r, echo=TRUE, tidy=TRUE}
+activity_with_na <- apply(activity_raw, 1, function(x){any(is.na(x))})
+sum(activity_with_na)
+activity <- activity_raw[!activity_with_na, ]
+```
+>>> Verify that number of rows of clean data is  
+>>> is equal to the difference between the number of rows of raw data and number  
+>>> of rows with NA.
+
+```{r, echo=TRUE, tidy=TRUE}
+    nrow(activity) == nrow(activity_raw) - sum(activity_with_na)
+```
+###    1.1.4  Transform column "date" in a R "Date" type format 
+```{r, echo=TRUE, tidy=TRUE}
+typeof(activity$date)
+head(activity)
+activity$date <- as.character(activity$date)
+activity$date <- as.Date(activity$date, format = '%Y-%m-%d')
+head(activity)
+tail(activity)
+typeof(activity$date)
+data.class(activity$date)
+summary(activity$date)
+start_rec <- min(activity$date)
+end_rec <- max(activity$date)
+(days_span <- end_rec - start_rec)
+(number_days_rec <- length(levels(factor(activity$date))))
+```
+>>> From a quick look into the date it can be observed that the span of recordings is over 58 days  
+>>> but it does not guarantee that we have records for every single day between 2012-10-02 and 2012-11-29.  
+>>> To find the actual number of days for which activity has been recorded, extract the number of levels  
+>>> for table activity$date which is 53 days. 
+>>> Therefore, we have only 53 days with recorded actvity.  
+
+## 1.2. What is mean total number of steps taken per day?
+### 1.2.1 Make a histogram of total number of stes taken each day
+>>> *  A new data frame has been build. It has two columns [dates, steps] and 53 rows corresponding   
+>>> to the number of days that were recorded.
+
+```{r, echo=TRUE, tidy=TRUE}
+daily_steps <- data.frame(steps=numeric(0), 
+                date=as.Date(character()),
+                stringsAsFactors=FALSE)
+for (i in levels(factor(activity$date))) {
+ new_vect <- c(sum(activity$steps[activity$date == i]), i)
+# print(new_vect)
+daily_steps[i, 1] <- sum(activity$steps[activity$date == i])
+daily_steps[i, 2] <- i
+}
+rownames(daily_steps) <- c(1:nrow(daily_steps))
+head(daily_steps)
+```
+>>> * Bellow is the histogram showing the frequency of number of steps per day.  
+>>>   It is a quick overview of the distribution centered around 11000steps/day.
+
+```{r histogram_of_steps_from_activity_without_NA, fig.width=7, fig.height=10, fig.width=12, fig.path="/Users/ashwini/RepData_PeerAssessment1/figures/", tidy=TRUE}
+hist(daily_steps$steps, 
+     col = "red",
+     xlab = "Total numebrs os steps/day",
+     main = "Histogram of total numer of step per day",
+     breaks = seq(0, 25000, by = 2500), 
+     xlim = c(0, 25000),
+     xaxp = c(0, 25000, 10), 
+     ylim = c(0, 20),
+     yaxp = c(0, 20, 10)
+)
+# dev.copy(png,'/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_activity_without_NA.png')
+# dev.off()
+```
+
+### 1.2.2 Calculate and report the mean and median total number of steps taken per day
+```{r, echo=TRUE, tidy=TRUE}
+average_number_of_steps <- mean(daily_steps$steps)
+median_of_daily_steps <- median(daily_steps$steps)
+cat("Average number of steps per day is : ", average_number_of_steps)
+cat("The median of number of steps per day is : ", median_of_daily_steps)
+```
+
+## 1.3 What is the average daily activity pattern?
+### 1.3.1 Build a new table and calculate the average number of steps for each 5 minute interval across all recorded days
+```{r, echo=TRUE, tidy=TRUE}
+average_per_interval <- data.frame(interval = numeric(length(levels(factor(activity$interval)))), 
+                                   average_steps_per_interval = numeric(length(levels(factor(activity$interval)))))
+average_per_interval$interval = as.numeric(levels(factor(activity$interval)))
+for(i in average_per_interval$interval){
+average_per_interval[average_per_interval$interval == i, 2] <- mean(activity[activity$interval == i, ]$steps)
+}
+head(average_per_interval)
+```
+
+### 1.3.2 Plot the average of steps for each 5 minutes interval across all recorded days
+```{r avrg_daily_steps,fig.width=7, fig.height=10, fig.width=12, tidy=TRUE, fig.path= "/Users/ashwini/RepData_PeerAssessment1/figures/"}
+plot(average_per_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "Average steps",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval across all recorded days",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_per_interval$interval), 
+            max(average_per_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_per_interval$interval), 
+            max(average_per_interval$interval),
+            5),
+       h = seq(min(average_per_interval$average_steps_per_interval), 
+            max(average_per_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
+```
+
+### 1.3.3 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r, echo=TRUE, tidy=TRUE}
+max_step_index <- which(average_per_interval$average_steps_per_interval == max(c(average_per_interval$average_steps_per_interval)))
+interval_num <- average_per_interval$interval[max_step_index]
+cat("The 5-minutes interval containing the maximum number of steps, ", max(c(average_per_interval$average_steps_per_interval)), ", is ", interval_num, ".", sep = "")
+```
+_**NOTE: This corresponds to 8:35AM.**_
+
+PART 2 
+------
+## 2.1 Imputing missing values  
+### 2.1.1 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
+```{r, echo=TRUE, tidy=TRUE}
+activity_with_na <- apply(activity_raw, 1, function(x){any(is.na(x))})
+cat("Total number of rows with NAs is :", sum(activity_with_na))
+```
+_**NOTE: This has already been calculated in the first part.**_
+### 2.1.2 Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+>>> I will replace the NA from original table with the mean of the number of steps per 5 minutes interval calculated in PART 1.
+>>> To do this, a table containg only NAs values from original data has been build. See table bellow.
+>>> The updates will be performed on this new table called activity_na
+
+```{r, echo=TRUE,tidy=TRUE}
+activity_na <- activity_raw[which(activity_with_na == TRUE), ]
+activity_na$steps <- round(average_per_interval$average_steps_per_interval)
+head(activity_na)
+tail(activity_na)
+```
+
+## 2.2 Update the original set
+### 2.2.1 Create a new dataset that is equal to the original dataset but with the missing data filled in.
+>>> The new table, activity_new, is built by concatenation between table without NA (activity) and 
+>>> table with updated NAs (activity_na).
+>>> To restore the order of rows, I use builtin function sort() on the newly created table.
+
+```{r, echo=TRUE,tidy=TRUE}
+activity_new <- rbind(activity, activity_na)
+activity_new <- activity_new[sort(as.integer(rownames(activity_new))), ]
+head(activity_new)
+tail(activity_new)
+```
+
+### 2.2.2 Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+>>> *  A new data frame has been build. It has two columns [dates, steps] and 53 rows corresponding   
+>>> to the total number of days from the updated activity table.
+
+```{r, echo=TRUE, tidy=TRUE}
+daily_steps_new<- data.frame(steps=numeric(0), 
+                date=as.Date(character()),
+                stringsAsFactors=FALSE)
+for (i in levels(factor(activity_new$date))) {
+ new_vect <- c(sum(activity_new$steps[activity_new$date == i]), i)
+# print(new_vect)
+daily_steps_new[i, 1] <- sum(activity_new$steps[activity_new$date == i])
+daily_steps_new[i, 2] <- i
+}
+rownames(daily_steps_new) <- c(1:nrow(daily_steps_new))
+head(daily_steps_new)
+```
+```{r histogram_of_steps_from_updated_activity, fig.width=7, fig.height=10, fig.width=12, fig.path="/Users/ashwini/RepData_PeerAssessment1/figures/", tidy=TRUE}
+hist(daily_steps_new$steps, 
+     col = "red",
+     xlab = "Total numebrs os steps/day",
+     main = "Histogram of total numer of step per day",
+     breaks = seq(0, 25000, by = 2500), 
+     xlim = c(0, 25000),
+     xaxp = c(0, 25000, 10), 
+     ylim = c(0, 20),
+     yaxp = c(0, 20, 10)
+)
+```
+```{r, echo=TRUE, tidy=TRUE}
+new_average_number_of_steps <- mean(daily_steps_new$steps)
+new_median_of_daily_steps <- median(daily_steps_new$steps)
+cat("Average number of steps per day is : ", new_average_number_of_steps)
+cat("The median of number of steps per day is : ", new_median_of_daily_steps)
+```
+
+### 2.2.3 Summary:  
+_**Compare the two cases from PART 1 and PART 2 -- cleaned data(NA were removed) and updated data (NA were replaced with the mean of 5-minutes inteval)**_  
+1. The mean remains the same (it makes sense as NA were replaced by the means of 5-minutes interval)
+2. The median is "almost" the same. The median for the "Activity Updated" slightly moves away from the mean  
+3. The impact of updating the original data with the mean of 5-minutes interval is that we will see an increase in the frequencies 
+4. This can be seen in the two histograms reproduced here for convenience
+  | Activity no NA | Activity Updated
+--- | --- | --- 
+median |`r as.integer(average_number_of_steps)` |`r as.integer(new_average_number_of_steps)`
+mean   |`r as.integer(median_of_daily_steps)`   |`r as.integer(new_median_of_daily_steps)`
+**Reproduce the two histograms side-by-side**
+  | Activity without NA | Activity Updated
+--- | --- | --- 
+  | ![Cleaned Activity](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_activity_without_NA-1.png)   | ![Updated Activity](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_updated_activity-1.png)
+PART 3
+-----
+## 3.1 Are there differences in activity patterns between weekdays and weekends?
+### 3.1.1 Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+```{r, echo=TRUE, tidy=TRUE}
+activity_days <- cbind(activity_new, days = (activity_new$date))
+head(activity_days)
+activity_days$days <- weekdays(activity_days$days)
+head(activity_days)
+activity_days$days[which(activity_days$days == c("Saturday", "Sunday"))] <- "weekend"
+activity_days$days[which(activity_days$days != "weekend")] <- "weekday"
+#factor(activity_days$days)
+activity_weekdays <- activity_days[activity_days$days == "weekday", ]
+activity_weekends <- activity_days[activity_days$days == "weekend", ]
+head(activity_weekdays)
+head(activity_weekends)
+average_weekdays_interval <- data.frame(interval = numeric(length(levels(factor(activity_weekdays$interval)))), 
+                              average_steps_per_interval = numeric(length(levels(factor(activity_weekdays$interval)))))
+average_weekdays_interval$interval <- as.numeric(levels(factor(activity_weekdays$interval)))
+for(i in average_weekdays_interval$interval){
+  average_weekdays_interval[average_weekdays_interval$interval == i, 2] <- mean(activity_weekdays[activity_weekdays$interval == i, ]$steps)
+}
+head(average_weekdays_interval)
+average_weekends_interval <- data.frame(interval = numeric(length(levels(factor(activity_weekends$interval)))), 
+                              average_steps_per_interval = numeric(length(levels(factor(activity_weekends$interval)))))
+average_weekends_interval$interval = as.numeric(levels(factor(activity_weekends$interval)))
+for(i in average_weekends_interval$interval){
+  average_weekends_interval[average_weekends_interval$interval == i, 2] <- mean(activity_weekends[activity_weekends$interval == i, ]$steps)
+}
+head(average_weekends_interval)
+```
+
+### 3.1.2 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
+```{r avrg_weedays_steps,fig.width=7, fig.height=10, fig.width=12, tidy=TRUE, fig.path= "/Users/ashwini/RepData_PeerAssessment1/figures/"}
+par(mfrow = c(2,1))
+plot(average_weekdays_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "5-minutes averages steps during weekdays",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval during weekdays",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_weekdays_interval$interval), 
+            max(average_weekdays_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_weekdays_interval$interval), 
+            max(average_weekdays_interval$interval),
+            5),
+       h = seq(min(average_weekdays_interval$average_steps_per_interval), 
+            max(average_weekdays_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
+plot(average_weekends_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "5-minutes averages steps during weekends",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval during weekends",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_weekends_interval$interval), 
+            max(average_weekends_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_weekends_interval$interval), 
+            max(average_weekends_interval$interval),
+            5),
+       h = seq(min(average_weekends_interval$average_steps_per_interval), 
+            max(average_weekends_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
+```
