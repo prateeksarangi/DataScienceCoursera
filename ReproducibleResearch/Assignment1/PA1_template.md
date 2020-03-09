@@ -12,7 +12,7 @@ PART 1
 ------
 
 ```
-by Prateek Sarangi, Sat , Mar  15:16:25
+by Prateek Sarangi, Mon , Mar  10:32:31
 ```
 _**Abstract:**   This document represents the work for the **Programming Assignment 1** as  
 part of **Reproducible esearch** online class offered by **Coursera**._  
@@ -22,7 +22,7 @@ part of **Reproducible esearch** online class offered by **Coursera**._
 ###    1.1.1  Read the raw data in R
 
 ```r
-activity_raw <- read.csv("/Users/ashwini/RepData_PeerAssessment1/activity.csv")
+activity_raw <- read.csv("~/Downloads/Data/activity.csv")
 ```
 ###    1.1.2  Eliminate the rows which contains NAs
 >>> This process is done in two steps:
@@ -31,9 +31,7 @@ activity_raw <- read.csv("/Users/ashwini/RepData_PeerAssessment1/activity.csv")
 
 
 ```r
-activity_with_na <- apply(activity_raw, 1, function(x) {
-    any(is.na(x))
-})
+activity_with_na <- apply(activity_raw, 1, function(x){any(is.na(x))})
 sum(activity_with_na)
 ```
 
@@ -50,7 +48,7 @@ activity <- activity_raw[!activity_with_na, ]
 
 
 ```r
-nrow(activity) == nrow(activity_raw) - sum(activity_with_na)
+    nrow(activity) == nrow(activity_raw) - sum(activity_with_na)
 ```
 
 ```
@@ -82,15 +80,7 @@ head(activity)
 
 ```r
 activity$date <- as.character(activity$date)
-activity$date <- as.Date(activity$date, format = "%Y-%m-%d")
-```
-
-```
-## Warning in strptime(x, format, tz = "GMT"): unknown timezone 'zone/tz/2019c.1.0/
-## zoneinfo/Asia/Kolkata'
-```
-
-```r
+activity$date <- as.Date(activity$date, format = '%Y-%m-%d')
 head(activity)
 ```
 
@@ -173,12 +163,14 @@ end_rec <- max(activity$date)
 
 
 ```r
-daily_steps <- data.frame(steps = numeric(0), date = as.Date(character()), stringsAsFactors = FALSE)
+daily_steps <- data.frame(steps=numeric(0), 
+                date=as.Date(character()),
+                stringsAsFactors=FALSE)
 for (i in levels(factor(activity$date))) {
-    new_vect <- c(sum(activity$steps[activity$date == i]), i)
-    # print(new_vect)
-    daily_steps[i, 1] <- sum(activity$steps[activity$date == i])
-    daily_steps[i, 2] <- i
+ new_vect <- c(sum(activity$steps[activity$date == i]), i)
+# print(new_vect)
+daily_steps[i, 1] <- sum(activity$steps[activity$date == i])
+daily_steps[i, 2] <- i
 }
 rownames(daily_steps) <- c(1:nrow(daily_steps))
 head(daily_steps)
@@ -198,12 +190,19 @@ head(daily_steps)
 
 
 ```r
-hist(daily_steps$steps, col = "red", xlab = "Total numebrs os steps/day", main = "Histogram of total numer of step per day", 
-    breaks = seq(0, 25000, by = 2500), xlim = c(0, 25000), xaxp = c(0, 25000, 10), 
-    ylim = c(0, 20), yaxp = c(0, 20, 10))
+hist(daily_steps$steps, 
+     col = "red",
+     xlab = "Total numebrs os steps/day",
+     main = "Histogram of total numer of step per day",
+     breaks = seq(0, 25000, by = 2500), 
+     xlim = c(0, 25000),
+     xaxp = c(0, 25000, 10), 
+     ylim = c(0, 20),
+     yaxp = c(0, 20, 10)
+)
 ```
 
-![](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_activity_without_NA-1.png)<!-- -->
+![](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/histogram_of_steps_from_activity_without_NA-1.png)<!-- -->
 
 ```r
 # dev.copy(png,'/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_activity_without_NA.png')
@@ -235,11 +234,10 @@ cat("The median of number of steps per day is : ", median_of_daily_steps)
 
 ```r
 average_per_interval <- data.frame(interval = numeric(length(levels(factor(activity$interval)))), 
-    average_steps_per_interval = numeric(length(levels(factor(activity$interval)))))
+                                   average_steps_per_interval = numeric(length(levels(factor(activity$interval)))))
 average_per_interval$interval = as.numeric(levels(factor(activity$interval)))
-for (i in average_per_interval$interval) {
-    average_per_interval[average_per_interval$interval == i, 2] <- mean(activity[activity$interval == 
-        i, ]$steps)
+for(i in average_per_interval$interval){
+average_per_interval[average_per_interval$interval == i, 2] <- mean(activity[activity$interval == i, ]$steps)
 }
 head(average_per_interval)
 ```
@@ -257,25 +255,38 @@ head(average_per_interval)
 ### 1.3.2 Plot the average of steps for each 5 minutes interval across all recorded days
 
 ```r
-plot(average_per_interval$average_steps_per_interval, xaxt = "n", type = "l", col = "blue", 
-    ylab = "Average steps", xlab = "5 minutes intervals", main = "Average number of steps for each 5 minutes inteval across all recorded days", 
-    panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2"))
-axis(1, at = seq(min(average_per_interval$interval), max(average_per_interval$interval), 
-    5), las = 2)
-abline(v = seq(min(average_per_interval$interval), max(average_per_interval$interval), 
-    5), h = seq(min(average_per_interval$average_steps_per_interval), max(average_per_interval$average_steps_per_interval), 
-    5), col = "cornsilk2", lty = 3)
+plot(average_per_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "Average steps",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval across all recorded days",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_per_interval$interval), 
+            max(average_per_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_per_interval$interval), 
+            max(average_per_interval$interval),
+            5),
+       h = seq(min(average_per_interval$average_steps_per_interval), 
+            max(average_per_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
 ```
 
-![](/Users/ashwini/RepData_PeerAssessment1/figures/avrg_daily_steps-1.png)<!-- -->
+![](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/avrg_daily_steps-1.png)<!-- -->
 
 ### 1.3.3 Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
 max_step_index <- which(average_per_interval$average_steps_per_interval == max(c(average_per_interval$average_steps_per_interval)))
 interval_num <- average_per_interval$interval[max_step_index]
-cat("The 5-minutes interval containing the maximum number of steps, ", max(c(average_per_interval$average_steps_per_interval)), 
-    ", is ", interval_num, ".", sep = "")
+cat("The 5-minutes interval containing the maximum number of steps, ", max(c(average_per_interval$average_steps_per_interval)), ", is ", interval_num, ".", sep = "")
 ```
 
 ```
@@ -289,9 +300,7 @@ PART 2
 ### 2.1.1 Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
 ```r
-activity_with_na <- apply(activity_raw, 1, function(x) {
-    any(is.na(x))
-})
+activity_with_na <- apply(activity_raw, 1, function(x){any(is.na(x))})
 cat("Total number of rows with NAs is :", sum(activity_with_na))
 ```
 
@@ -378,12 +387,14 @@ tail(activity_new)
 
 
 ```r
-daily_steps_new <- data.frame(steps = numeric(0), date = as.Date(character()), stringsAsFactors = FALSE)
+daily_steps_new<- data.frame(steps=numeric(0), 
+                date=as.Date(character()),
+                stringsAsFactors=FALSE)
 for (i in levels(factor(activity_new$date))) {
-    new_vect <- c(sum(activity_new$steps[activity_new$date == i]), i)
-    # print(new_vect)
-    daily_steps_new[i, 1] <- sum(activity_new$steps[activity_new$date == i])
-    daily_steps_new[i, 2] <- i
+ new_vect <- c(sum(activity_new$steps[activity_new$date == i]), i)
+# print(new_vect)
+daily_steps_new[i, 1] <- sum(activity_new$steps[activity_new$date == i])
+daily_steps_new[i, 2] <- i
 }
 rownames(daily_steps_new) <- c(1:nrow(daily_steps_new))
 head(daily_steps_new)
@@ -400,12 +411,19 @@ head(daily_steps_new)
 ```
 
 ```r
-hist(daily_steps_new$steps, col = "red", xlab = "Total numebrs os steps/day", main = "Histogram of total numer of step per day", 
-    breaks = seq(0, 25000, by = 2500), xlim = c(0, 25000), xaxp = c(0, 25000, 10), 
-    ylim = c(0, 20), yaxp = c(0, 20, 10))
+hist(daily_steps_new$steps, 
+     col = "red",
+     xlab = "Total numebrs os steps/day",
+     main = "Histogram of total numer of step per day",
+     breaks = seq(0, 25000, by = 2500), 
+     xlim = c(0, 25000),
+     xaxp = c(0, 25000, 10), 
+     ylim = c(0, 20),
+     yaxp = c(0, 20, 10)
+)
 ```
 
-![](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_updated_activity-1.png)<!-- -->
+![](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/histogram_of_steps_from_updated_activity-1.png)<!-- -->
 
 ```r
 new_average_number_of_steps <- mean(daily_steps_new$steps)
@@ -438,7 +456,7 @@ mean   |10765   |10762
 **Reproduce the two histograms side-by-side**
   | Activity without NA | Activity Updated
 --- | --- | --- 
-  | ![Cleaned Activity](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_activity_without_NA-1.png)   | ![Updated Activity](/Users/ashwini/RepData_PeerAssessment1/figures/histogram_of_steps_from_updated_activity-1.png)
+  | ![Cleaned Activity](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/histogram_of_steps_from_activity_without_NA-1.png)   | ![Updated Activity](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/histogram_of_steps_from_updated_activity-1.png)
 PART 3
 -----
 ## 3.1 Are there differences in activity patterns between weekdays and weekends?
@@ -477,7 +495,7 @@ head(activity_days)
 ```r
 activity_days$days[which(activity_days$days == c("Saturday", "Sunday"))] <- "weekend"
 activity_days$days[which(activity_days$days != "weekend")] <- "weekday"
-# factor(activity_days$days)
+#factor(activity_days$days)
 activity_weekdays <- activity_days[activity_days$days == "weekday", ]
 activity_weekends <- activity_days[activity_days$days == "weekend", ]
 head(activity_weekdays)
@@ -509,11 +527,10 @@ head(activity_weekends)
 
 ```r
 average_weekdays_interval <- data.frame(interval = numeric(length(levels(factor(activity_weekdays$interval)))), 
-    average_steps_per_interval = numeric(length(levels(factor(activity_weekdays$interval)))))
+                              average_steps_per_interval = numeric(length(levels(factor(activity_weekdays$interval)))))
 average_weekdays_interval$interval <- as.numeric(levels(factor(activity_weekdays$interval)))
-for (i in average_weekdays_interval$interval) {
-    average_weekdays_interval[average_weekdays_interval$interval == i, 2] <- mean(activity_weekdays[activity_weekdays$interval == 
-        i, ]$steps)
+for(i in average_weekdays_interval$interval){
+  average_weekdays_interval[average_weekdays_interval$interval == i, 2] <- mean(activity_weekdays[activity_weekdays$interval == i, ]$steps)
 }
 head(average_weekdays_interval)
 ```
@@ -530,11 +547,10 @@ head(average_weekdays_interval)
 
 ```r
 average_weekends_interval <- data.frame(interval = numeric(length(levels(factor(activity_weekends$interval)))), 
-    average_steps_per_interval = numeric(length(levels(factor(activity_weekends$interval)))))
+                              average_steps_per_interval = numeric(length(levels(factor(activity_weekends$interval)))))
 average_weekends_interval$interval = as.numeric(levels(factor(activity_weekends$interval)))
-for (i in average_weekends_interval$interval) {
-    average_weekends_interval[average_weekends_interval$interval == i, 2] <- mean(activity_weekends[activity_weekends$interval == 
-        i, ]$steps)
+for(i in average_weekends_interval$interval){
+  average_weekends_interval[average_weekends_interval$interval == i, 2] <- mean(activity_weekends[activity_weekends$interval == i, ]$steps)
 }
 head(average_weekends_interval)
 ```
@@ -552,25 +568,51 @@ head(average_weekends_interval)
 ### 3.1.2 Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). 
 
 ```r
-par(mfrow = c(2, 1))
-plot(average_weekdays_interval$average_steps_per_interval, xaxt = "n", type = "l", 
-    col = "blue", ylab = "5-minutes averages steps during weekdays", xlab = "5 minutes intervals", 
-    main = "Average number of steps for each 5 minutes inteval during weekdays", 
-    panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2"))
-axis(1, at = seq(min(average_weekdays_interval$interval), max(average_weekdays_interval$interval), 
-    5), las = 2)
-abline(v = seq(min(average_weekdays_interval$interval), max(average_weekdays_interval$interval), 
-    5), h = seq(min(average_weekdays_interval$average_steps_per_interval), max(average_weekdays_interval$average_steps_per_interval), 
-    5), col = "cornsilk2", lty = 3)
-plot(average_weekends_interval$average_steps_per_interval, xaxt = "n", type = "l", 
-    col = "blue", ylab = "5-minutes averages steps during weekends", xlab = "5 minutes intervals", 
-    main = "Average number of steps for each 5 minutes inteval during weekends", 
-    panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2"))
-axis(1, at = seq(min(average_weekends_interval$interval), max(average_weekends_interval$interval), 
-    5), las = 2)
-abline(v = seq(min(average_weekends_interval$interval), max(average_weekends_interval$interval), 
-    5), h = seq(min(average_weekends_interval$average_steps_per_interval), max(average_weekends_interval$average_steps_per_interval), 
-    5), col = "cornsilk2", lty = 3)
+par(mfrow = c(2,1))
+plot(average_weekdays_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "5-minutes averages steps during weekdays",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval during weekdays",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_weekdays_interval$interval), 
+            max(average_weekdays_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_weekdays_interval$interval), 
+            max(average_weekdays_interval$interval),
+            5),
+       h = seq(min(average_weekdays_interval$average_steps_per_interval), 
+            max(average_weekdays_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
+plot(average_weekends_interval$average_steps_per_interval,
+     xaxt = "n",
+     type = "l", 
+     col = "blue", 
+     ylab = "5-minutes averages steps during weekends",
+     xlab = "5 minutes intervals",
+     main = "Average number of steps for each 5 minutes inteval during weekends",
+     panel.first = grid(nx = NULL, ny = NULL, lty = 6, col = "cornsilk2")
+     )
+axis(1, 
+     at=seq(min(average_weekends_interval$interval), 
+            max(average_weekends_interval$interval),
+            5), 
+     las=2)
+abline(v = seq(min(average_weekends_interval$interval), 
+            max(average_weekends_interval$interval),
+            5),
+       h = seq(min(average_weekends_interval$average_steps_per_interval), 
+            max(average_weekends_interval$average_steps_per_interval),
+            5), 
+       col = "cornsilk2", 
+       lty = 3)
 ```
 
-![](/Users/ashwini/RepData_PeerAssessment1/figures/avrg_weedays_steps-1.png)<!-- -->
+![](/Users/ashwini/DataScienceCoursera/ReproducibleResearch/Assignment1/figures/avrg_weedays_steps-1.png)<!-- -->
