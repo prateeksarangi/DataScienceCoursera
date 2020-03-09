@@ -1,0 +1,83 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Relation of Severe Weather Events on Public Health and Economy
+
+## Synopsis
+It was found that severe weather events indeed had a huge impact on society in recent years. Floods were found to have cost most significant economy damage, which attributed to more than 150 billions US dollars of property damage. Tornados were found to have made most number of death and injuries, with almost 97,000 injuries or fatalities in recent years.
+
+## Data Processing
+
+**Performed steps**:  
+*Load the data from csv file*  
+*Remove some unused variables to save memory*  
+*Remove original data to save memory*  
+*Calculate the damage*  
+*Using levels(), it was found that the exponential has lots of values that were not explained in the documentation. These values were ignored. Only K, M, B were understood as 1000, 10^6 and 10^9, respectively.*  
+*Property damage & crop damage were summed up to get the total damage*  
+*Calculate total fatalities and injuries*
+
+```{r}
+# Load the data
+storm_data_raw <- read.csv("~/Downloads/Data/repdata-data-StormData.csv")
+
+# Remove unnecessary columns
+good_columns <- c("EVTYPE",                  # Event type
+                  "FATALITIES", "INJURIES",  # Fatalities & Injuries
+                  "PROPDMG", "PROPDMGEXP",   # Property damange & its exponential
+                  "CROPDMG", "CROPDMGEXP")   # Crop damage & its exponential
+storm_data <- storm_data_raw[,good_columns]
+summary(storm_data)
+
+# Remove original data to save space
+remove(storm_data_raw)
+
+# Calculate the total damage
+levels(storm_data$PROPDMGEXP) <- c(
+  "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", "1", 
+  "1000000000", "1", "1", "1000", "1000000", "1000000")
+levels(storm_data$CROPDMGEXP) <- c(
+  "1", "1", "1", "1", "1000000000", "1000", 
+  "1000", "1000000", "1000000")
+storm_data$PROPDMG <- storm_data$PROPDMG * 
+  as.integer(as.character(storm_data$PROPDMGEXP))
+storm_data$CROPDMG <- storm_data$CROPDMG * 
+  as.integer(as.character(storm_data$CROPDMGEXP))
+storm_data$DAMAGE <- storm_data$PROPDMG + storm_data$CROPDMG
+
+# Calculate total injuries & fatalities
+storm_data$HEALTH <- storm_data$INJURIES + storm_data$FATALITIES
+```
+
+## Results
+### Impact on Population health
+Across the United States, which types of events (as indicated in the EVTYPE variable) are most harmful with respect to population health?
+
+```{r}
+total <- sort(
+  tapply(storm_data$HEALTH, storm_data$EVTYPE, sum),
+  decreasing = T)
+barplot(head(total,3),
+        main="Most harmful events",
+        xlab="Event type",
+        ylab="Total fatalities and injuries")
+max(total)
+```
+
+From the figure, it was found that Tornado has caused the most number of injuries and fatalities (96,980 fatalities and injuries), significantly more than any other type of events.
+
+### Impact on Economy
+```{r}
+total <- sort(
+  tapply(storm_data$DAMAGE, storm_data$EVTYPE, sum),
+  decreasing = T)
+barplot(head(total,3),
+        main="Most damaging events",
+        xlab="Event type",
+        ylab="Total damage")
+max(total)
+```
+
+From the figure, it was found that Flood has caused biggest damage (around 150 billions US dollars), much higher than any other events.
