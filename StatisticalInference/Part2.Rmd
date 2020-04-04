@@ -1,94 +1,91 @@
 ---
-output:
-  pdf_document: default
-  html_document:
-    keep_md: yes
+title: "Statistical Inference (ToothGrowth)"
+author: "Prateek Sarangi"
+output: pdf_document
 ---
 
-```{r global_options, include=FALSE}
-library(knitr)
-opts_chunk$set(fig.width=10, fig.height=8, warning=FALSE, message=FALSE)
-```
+# Introduction
+In the second part of Assignment, we're going to analyze the ToothGrowth data in the R datasets package. 
 
-# Statistical Inference Course Project 2
-
-## Overview
-Load the ToothGrowth data and perform some basic exploratory data analyses 
-- Provide a basic summary of the data.
-- Use confidence intervals and/or hypothesis tests to compare tooth growth by supp and dose. (Only use the techniques from class, even if there's other approaches worth considering)
-- State your conclusions and the assumptions needed for your conclusions. 
+1. Load the ToothGrowth data and perform some basic exploratory data analyses 
+2. Provide a basic summary of the data.
+3. Use confidence intervals and hypothesis tests to compare tooth growth by supp and dose. (Use the techniques from class even if there are other approaches worth considering)
+4. State your conclusions and the assumptions needed for your conclusions. 
 
 
-## Load Data
+# Data analysis
 
-```{r}
-# load neccesary libraries
-library(ggplot2)
+## 1. Load data
+In this project, we will analyze the effect of Vitamin C on tooth growth in guinea pigs. Dataset is come from the `ToothGrowth` data in the R package. 
+
+First we need to load the datasets
+```r
 library(datasets)
-library(gridExtra)
-library(GGally)
-# The Effect of Vitamin C on Tooth Growth in Guinea Pigs
 data(ToothGrowth)
-toothGrowth <- ToothGrowth 
-toothGrowth$dose <- as.factor(toothGrowth$dose) # convert to factor
+str(ToothGrowth)
 ```
 
+## 2. Show basic data of dataset (Question 1)
 
-## Basic Summary of the data
+Lets get some data from our dataset:
 ```{r}
-str(toothGrowth)
-summary(toothGrowth)
-head(toothGrowth)
-table(toothGrowth$supp, toothGrowth$dose)
-```
-```{r echo=FALSE}
-p1 <- ggplot(data=toothGrowth, aes(x=dose,y=len,fill=dose)) +
-  geom_boxplot() + 
-  theme(legend.position="none") + 
-  facet_grid(.~supp) 
-p2 <- ggplot(data=toothGrowth, aes(x=supp,y=len,fill=supp)) +
-  geom_boxplot() + 
-  theme(legend.position="none") + 
-  facet_grid(.~dose) 
-p3 <- ggplot(data=toothGrowth, aes(x=supp,y=len,fill=supp)) +
-  geom_boxplot()
-p4 <- ggplot(data=toothGrowth, aes(x=dose,y=len,fill=dose)) +
-  geom_boxplot()
-grid.arrange(p1, p4, p2, p3, ncol = 2, nrow=2)
-#ggpairs(toothGrowth, 
-#        upper = list(continuous = "density", combo = "box"),
-#        lower = list(continuous="smooth"),        
-#        colour = "dose",
-#        axisLabels='show')
+ToothGrowth$dose = factor(ToothGrowth$dose, levels=c(0.5,1.0,2.0), 
+                          labels=c("low","med","hig"))
+replications(len ~ supp * dose, data=ToothGrowth)
 ```
 
-Do some analysis based on Analysis of Variance (ANOVA)
+We can also plot some data to understand the data:
 ```{r}
-anova.out <- aov(len ~ supp * dose, data=toothGrowth)
-summary(anova.out)
+boxplot(len ~ supp * dose, data=ToothGrowth, col="cyan",
+        ylab="Tooth Length", main="Boxplots of Tooth Growth Data")
 ```
 
-The results show there is a notable interaction between the length (len) and dosage (dose) (F(1,54)=15.572;p<0.01)
-Also a very clear effect on length(len) by supplement type (supp) (F(2,54)=92;p<0.01). 
-Last but not least there is a minor interaction between the combination of supplement type (supp) and dosage (dose) compared to the length (len) (F(2,54)=4.107;p<0.05).
+Here above the results from dataset. First code shows us number of data for our set.
+We created a three levels of doses to show how much data are in each category we would like to use.
+
+Our plot(second code) shows us the length of teeth in each of 10 guinea pigs at each of three doses of Vitamin C (levels: 0.5, 1, and 2 mg). Each dose is presented with two delivery methods (orange juice marked as "OJ" and ascorbic acid marked as "VC"). Totally we have 60 observations. 
+
+
+## 3. Basic summary (Question 2)
+
+We can get a summary of the above plot using this code:
+```{r}
+with(ToothGrowth, tapply(len, list(supp,dose), var))
+```
+
+or using a mean of each values:
+```{r}
+with(ToothGrowth, tapply(len, list(supp,dose), mean))
+```
+
+## 4. Confidence/Hypothesis for tests (Question 3)
+
+Because of only 60 observations we can use only a t-confidence intervals. We would like to show that dose of Orage Juice is higher than Ascorbic Acid (VC).
 
 ```{r}
-TukeyHSD(anova.out)
+TG_OJ_low <- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose=="low",1]
+TG_VC_low <- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose=="low",1]
+t.test(TG_OJ_low, TG_VC_low, alternative="greater")
 ```
 
-The Tukey HSD  analysis shows that there are significant differences between each of the groups in supp and dose
-Only the interactions between VC:0.5-OJ:0.5; VC:1-OJ:0.5; OJ:2-OJ:1; VC:2-OJ:1 and VC:2-OJ:2  are not significant
+As we can see - the Orange Juice (0.5mg) dose is greater has a higher value than basic Ascorbic Acid (Vitamin C)
+
 ```{r}
-confint(anova.out)
-print(model.tables(anova.out,"means"),digits=3)
+TG_OJ_low <- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose=="med",1]
+TG_VC_low <- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose=="med",1]
+t.test(TG_OJ_low, TG_VC_low, alternative="greater")
 ```
 
-## Conclusions
+For the medium value of dose (1mg) also shows us, that Orange Juice dose is greater than basic Ascorbic Acid (Vitamin C)
 
-There are clear indications that both the supplement as the dosage have clear indipendent effects on the length of teeth guinea pigs. More those means on avarage longer teeth. Supplement type has a clear influence too, but OJ has a greater avarage teethgrowth in combination with dosages 0.5 and 1 then for the VC supplement, while teeth length for the VC supplement vs the OJ in combiantion with dosage 2 has no significant effect (almost same mean & same confidence interval)
+```{r}
+TG_OJ_low <- ToothGrowth[ToothGrowth$supp=="OJ" & ToothGrowth$dose=="hig",1]
+TG_VC_low <- ToothGrowth[ToothGrowth$supp=="VC" & ToothGrowth$dose=="hig",1]
+t.test(TG_OJ_low, TG_VC_low, alternative="greater")
+```
 
-The fact remains however that these assumpionts are based on the facts:
+The third test also shows us, that high dose (2mg) of Orange Juice is greater to the value from Vitamin C. But - values are very similar and we can not say that it is definitely higher.
 
-* that the guinea pigs are repesentative for the population of guinea pigs, 
-* that dosage and supplement were randomly assigned and 
-* that the distribution of the means is normal.
+## 5. Conclusions (Question 4)
+
+We have 95% confidence, that dosage levels for low and medium values (0.5 and 1 mg) for Orange Juice causes larger tooth growth than Vitamin C dosage. However, when the dosage level is high (2 mg), there isn't statistical difference in tooth growth between two dosage types.

@@ -1,0 +1,166 @@
+---
+title: "Regression Models Project"
+author: "Prateek Sarangi"
+output: pdf_document
+---
+
+# Executive Summary
+When you just consider automatic vs. manual transmission, the manual transmission is more fuel efficient. When you adjust for horsepower and weight, the difference between the two types of transmission is greatly reduced and is no longer statistically significant. I analyzed this by plotting the residuals against mpg as I added terms to the model. The last stage was to use the anova function to compare the model. The final conclusion is that the transmission type doesn't affect fuel efficiency.
+
+##Project description. 
+
+Using the data in the mtcars dataset, determine whether manual cars have lower mpg than automatic. Derive an estimate of the difference and interpret the difference.
+
+##Considerations
+
+Manual and automatic transmission cars may differ for reasons other than the transmission type. Exploratory data analysis will allow us to find these differences and interpret them. All numeric variables will be plotted as two boxplots comparing manual transmission in one box against automatic transmission in the other box. Plot 1 in Appendix.
+
+The mpg of AM=1 (manual transmission) is clearly higher. At a first glance, this is our answer. Manual transmissions have higher mpg (more gas efficiency). But look at weight in Plot 2 in the Appendix.
+
+The weight of AM=1 (manual) is clearly lower, so the weight varies with transmission type. We might expect weight to be related to mpg (see Plot 3).
+
+And, yes, heavier cars have lower mpg. 
+
+Is Horsepower related to mpg? (See Plot 4)
+
+Yes
+
+Now we do a simple (or marginal) fit of mpg to transmission type.
+
+```{r simplefit, echo=FALSE, results='hide'}
+simpfit<-lm(mpg~am, mtcars)
+summary(simpfit)
+```
+
+The fit gives us a beta1 of `r coef(simpfit)[2]`; this the change in mpg when switching from automatic to manual transmission. This model explains `r round(summary(simpfit)$r.squared*100)` % of the variance.
+
+The residuals are not random with respect to mpg, horsepower or weight. The residuals basically make a pair of straight lines with mpg, so something significant is missing. The residuals are lower (negative) at higher weight and higher horsepower.
+Now, we can color in the residuals vs mpg plot with transmission type, weight, displacement, horsepower, gear, or cylinders (see Plots 5-10)
+
+All of these variables show different distribution between automatic and manual transmission. 
+So we can add them one by one in a nested set of fits.
+First, we will try with adding horsepower (See plots 11-12).
+###Fit1
+```{r nestedfit, echo=FALSE, results='hide'}
+fit1<-lm(mpg~am + hp, mtcars)
+summary(fit1)
+## round(hatvalues(fit1),3)
+## round(dfbetas(fit1),3)
+```
+
+The beta1 coefficient against transmission type is `r coef(fit1)[2]`. This is different than the beta1 coefficient we got before. This is the change in mpg going from an automatic to a manual transmission, holding horsepower constant.
+
+This model explains `r round(summary(fit1)$r.squared*100)` % of the variance.
+
+We can use the diagnostics to look for outliers.
+`r rownames(mtcars[which.max(hatvalues(fit1)),])` is the most extreme. The fitted mpg (when fitted without this car) is greater than the actual by the most. `r rownames(mtcars[which.min(hatvalues(fit1)),])` is extreme. The fitted mpg (when fitted without this car) is less than the actual value by the most.
+
+###Fit 2
+Let's see what the interaction between transmission and horsepower reveals. See plots 13-15.
+
+```{r fit2, echo=FALSE, results='hide'}
+fit2<-lm(mpg~am*hp,mtcars)
+summary(fit2)
+```
+
+Now the interpretation of the beta1 is a bit more complex, the beta1 of `r coef(fit2)[2]` is the difference between automatic and manual transmissions for a car with 0 hp. We would rather look at the mean of reasonable car horsepower, `r round(mean(mtcars$hp))` hp. At that horsepower, the change in mpg from automatic to manual is `r coef(fit2)[2] + mean(mtcars$hp)*coef(fit2)[4]`.
+
+This model explains `r round(summary(fit2)$r.squared*100)` % of the variance. This is not a big improvement, so interaction is not the best explanation. This fit will not be used for any further analysis.
+
+`r rownames(mtcars[which.max(hatvalues(fit2)),])` is the most extreme value. 
+
+###Fit 3
+```{r fit3,echo=FALSE,results='hide'}
+fit3<-lm(mpg~am + hp + wt,mtcars)
+summary(fit3)
+```
+This model has 3 terms: transmission, horsepower and weight.
+This model explains `r round(summary(fit3)$r.squared*100)` % of the variance. See plots 16 and 17.
+
+The transmission type does not significantly affect the mpg, after adjustment for horsepower and weight. 
+Beta1 is `r coef(fit3)[2]`.
+
+`r rownames(mtcars[which.max(hatvalues(fit3)),])` is the most extreme value. 
+
+You can explain even more of the variance using an interaction term with horsepower and weight.
+
+###Fit 4
+```{r fit4, echo=FALSE, results='hide'}
+fit4<-lm(mpg~am + hp*wt,mtcars)
+summary(fit4)
+```
+
+This model has four terms: transmission, horsepower, weight and the interaction between horsepower and weight. This model explains `r round(summary(fit4)$r.squared*100)` % of the variance.
+To compare the fits (which are nested, meaning each one contains the terms of the previous), we use nested model testing in R.
+
+Beta1 is `r coef(fit4)[2]`.
+
+
+```{r ratios, echo=FALSE}
+anova(simpfit,fit1,fit3,fit4)
+```
+
+In this comparison of fits, we look at the decrease in RSS to see how much the additional terms improve the fit, versus just add complexity to the model. One rule of thumb is that the RSS should approximately halve with each term. These four fits have that relationship, so the fourth one is the best. 
+
+The transmission type does not significantly affect the mpg, after adjustment for horsepower and weight. 
+
+## Appendix Plots are found here.
+```{r boxplotmpg, echo=FALSE,fig.width=3,fig.height=3}
+## Boxplot of MPG
+boxplot(mpg~am,mtcars,main="Plot 1")
+```
+
+```{r boxweight,echo=FALSE,fig.width=3,fig.height=3}
+## Boxplot of weight
+boxplot(wt~am,mtcars, main="Plot 2")
+```
+
+```{r mpgvswt, echo=FALSE,fig.width=5,fig.height=5}
+plot(mtcars$wt,mtcars$mpg, main="Plot 3")
+```
+
+```{r boxplothp, echo=FALSE,fig.width=3,fig.height=3}
+boxplot(hp~am,mtcars, main="Plot 4")
+```
+
+```{r coloredplots, echo=FALSE,fig.width=4,fig.height=4}
+library(ggplot2)
+resmpg<-ggplot(mtcars,aes(x=mpg,y=simpfit$residuals))
+resmpg + geom_point(aes(color=am))+ ggtitle("Plot 5")
+resmpg + geom_point(aes(color=wt)) + ggtitle("Plot 6")
+resmpg + geom_point(aes(color=disp)) +ggtitle("Plot 7")
+resmpg + geom_point(aes(color=hp)) + ggtitle("Plot 8")
+resmpg + geom_point(aes(color=factor(gear))) + ggtitle("Plot 9")
+resmpg + geom_point(aes(color=cyl)) + ggtitle("Plot 10")
+```
+
+```{r plotfit1,echo=FALSE,fig.width=4,fig.height=4}
+resmpg1<-ggplot(mtcars,aes(x=mpg,y=fit1$residuals))
+resmpg1 + geom_point(aes(color=am)) + ggtitle("Plot 11")
+resmpg1 + geom_point(aes(color=factor(gear))) + ggtitle("Plot 12")
+```
+
+```{r fit2plot,echo=FALSE, fig.width=4,fig.height=4}
+resmpg2<-ggplot(mtcars,aes(x=mpg,y=fit2$residuals))
+resmpg2 + geom_point(aes(color=am)) +ggtitle("Plot 13")
+resmpg2 + geom_point(aes(color=gear)) + ggtitle("Plot 14")
+resmpg2 + geom_point(aes(color=cyl)) + ggtitle("Plot 15")
+```
+
+```{r fit3plot, echo=FALSE,fig.width=4,fig.height=4}
+resmpg3<-ggplot(mtcars,aes(x=mpg,y=fit3$residuals))
+resmpg3 + geom_point(aes(color=am)) + ggtitle("Plot 16")
+resmpg3 + geom_point(aes(color=disp)) + ggtitle("Plot 17")
+```
+##Version Information
+```{r versionno,echo=FALSE}
+VersionInfo<-R.Version()
+print(VersionInfo$platform)
+print(VersionInfo$version.string)
+```
+Data is originally from the 1974 <i>Motor Trend</i> US magazine.
+
+
+```{r dataset, echo=FALSE,results='hide'}
+summary(mtcars)
+```
