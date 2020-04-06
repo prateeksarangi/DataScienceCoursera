@@ -1,0 +1,23 @@
+---
+title: "Assignment1"
+author: "Prateek Sarangi"
+date: "05/04/2020"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r echo=FALSE}
+library(leaflet)
+
+m <- leaflet() %>%
+  addTiles() %>%  # Add default OpenStreetMap map tiles
+  addMarkers(lng=174.768, lat=-36.852, popup="The birthplace of R") %>%
+  setView(lng = 174.768, lat = -36.852, zoom = 12)
+m  # Print the map
+```

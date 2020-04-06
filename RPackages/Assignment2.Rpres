@@ -1,0 +1,56 @@
+Assignment2
+========================================================
+author: Prateek Sarangi
+date: "2020-04-06"
+autosize: true
+
+Content
+========================================================
+
+- Iris dataset summary
+- Plot for Iris dataset
+- Clustering Iris dataset
+- Plot after clustering
+
+Iris dataset head
+========================================================
+```{r}
+head(iris)
+```
+
+Iris dataset summary
+========================================================
+
+```{r}
+summary(iris)
+```
+
+Plot for Iris dataset
+========================================================
+
+```{r, echo=FALSE, fig.align = 'center'}
+library(plotly)
+fig <- plot_ly(iris, x = ~Sepal.Length, y = ~Petal.Width, color = ~Species, colors = c('#BF382A', '#0C4B8E'))
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Sepal Length'),
+                     yaxis = list(title = 'Petal Width')))
+fig
+```
+
+Clustering Iris dataset
+=========================================================
+
+```{r}
+df <- c(iris$Sepal.Length, iris$Sepal.Width, iris$Petal.Length, iris$Petal.Width)
+kmeans(iris[1:4], 3)
+```
+
+Plot after clustering
+=========================================================
+
+```{r}
+
+```
+
+Thank you!!
+=========================================================

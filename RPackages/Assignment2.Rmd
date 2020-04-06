@@ -1,0 +1,71 @@
+---
+title: "Assignment2"
+author: "Prateek Sarangi"
+date: "06/04/2020"
+output: powerpoint_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+Content
+========================================================
+
+- Iris dataset summary
+- Plot for Iris dataset
+- Clustering Iris dataset
+- Plot after clustering
+
+Iris dataset head
+========================================================
+```{r, echo=TRUE}
+head(iris)
+```
+
+Iris dataset summary
+========================================================
+
+```{r, echo=TRUE}
+summary(iris)
+```
+
+Plot for Iris dataset
+========================================================
+
+```{r, echo=FALSE, fig.align = 'center', message = FALSE}
+library(plotly)
+fig <- plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width)
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Sepal Length'),
+                     yaxis = list(title = 'Sepal Width')))
+fig
+```
+
+Clustering Iris dataset
+=========================================================
+
+```{r, message=FALSE}
+for (i in 1:100) {
+  cluster=kmeans(iris[1:4],3)
+}
+library(animation)
+kmeans.ani(iris[1:4], 3)
+```
+
+Plot after clustering
+=========================================================
+
+```{r}
+library(plotly)
+
+fig <- plot_ly(iris, x = ~Sepal.Length, y = ~Sepal.Width, color = cluster$cluster, colors = c('#BF382A', '#0C4B8E', '#4AC6B7'))
+fig <- fig %>% add_markers()
+fig <- fig %>% layout(scene = list(xaxis = list(title = 'Sepal Length'),
+                     yaxis = list(title = 'Sepal Width')))
+fig
+```
+
+Thank you!!
+=========================================================
+
