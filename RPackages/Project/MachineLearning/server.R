@@ -11,11 +11,9 @@ library(shiny)
 
 # Define server logic required to draw a histogram
 shinyServer(function(input, output) {
-    output$value1 <- renderUI({
+    output$value1 <- renderText(expr, {
         if(input$radio == "1"){
-            #output$value1 <- renderPrint("Neural")
-            img(src='Fig.png')
-            #output$value1 <- renderPrint('Accuracy of the model 92.48%')
+            output$value1 <- renderPrint("Neural")
         }
         
         else if(input$radio == "2"){
@@ -26,6 +24,5 @@ shinyServer(function(input, output) {
             output$value1 <- renderPrint("Neive")
         }
     })
-    
 
 })

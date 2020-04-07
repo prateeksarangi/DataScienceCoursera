@@ -33,7 +33,7 @@ shinyUI(fluidPage(
         mainPanel(
             h1("Graph of training the dataset in the specified
                model"),
-            uiOutput(outputId = "value1")
+            textOutput("value1")
         )
     )
 ))

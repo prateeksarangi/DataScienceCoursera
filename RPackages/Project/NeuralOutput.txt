@@ -1,0 +1,6 @@
+Trained on 212 samples (batch_size=32, epochs=300)
+Final epoch (plot to see history):
+        loss: -20.51
+    accuracy: 0.04245
+    val_loss: -24.3
+val_accuracy: 0.0989
