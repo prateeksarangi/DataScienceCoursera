@@ -60,5 +60,6 @@ plot(unlist(1:300),
 print('Accuracy of the model 92.48%')
 ```
 
-
-## 
+Example of set
+========================================================
+![Caption for the picture.](Fig.png)
