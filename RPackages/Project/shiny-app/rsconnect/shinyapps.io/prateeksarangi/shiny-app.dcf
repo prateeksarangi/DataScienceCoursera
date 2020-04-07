@@ -1,0 +1,13 @@
+name: shiny-app
+title: shiny-app
+username:
+account: prateeksarangi
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2073051
+bundleId: 2981155
+url: https://prateeksarangi.shinyapps.io/shiny-app/
+when: 1586269765.94164
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: helpers.R|include.md|data/events.agg.csv
