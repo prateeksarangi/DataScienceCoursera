@@ -9,7 +9,10 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+
+
 ## About the dataset.  
+
 ### Context  
 Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. Our goal here will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here:  
 Link:- http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).  
@@ -21,7 +24,9 @@ The dataset contains about 160 predictors (most of which are not required) and c
 Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.  
 Read more: http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4dPxKFugX
 
+
 ## Data cleaning and preprocessing
+
 ### Removing NA's from training data  
 ```{r}
 training <- read.csv("pml-training.csv")
@@ -68,14 +73,28 @@ trainData <- trainCleaned[inTrain, ]
 testData <- trainCleaned[-inTrain, ]
 ```
 
+
 ## Modeling the predictive algorithm  
+- For this dataset, I will be using **Random Forest**, as this algorithm automatically prioretise the features which are more relevent to the prediction and predict the output accordingly.  
+- **Random Forest** or **Random Decision Forests** are an **Ensemble Learning** method for classification, regression and other tasks that operate by constructing a multitude of decision trees at training time and outputting the class that is the mode of the classes or mean prediction of the individual trees.  
+```{r}
+library(randomForest)
+model <- randomForest(trainData$classe ~ ., data = trainData, ntree = 500, mtry = 6, importance = TRUE)
+print(model)
+```
+
+- Then we estimate the erformance of the model on the test set.  
+```{r}
+predValid <- predict(model, testData, type = "class")
+ValAcc <- mean(predValid == testData$classe)*100
+sprintf("Validation Accuracy of the model is:- %f", ValAcc)
+table(predValid,testData$classe)
+```
 
 
-
-
-
-
-
-
-
-
+## Predict the dataset on test data provided  
+Now, we apply the model to the original testing data set downloaded from the data source.  
+```{r}
+result <- predict(model, testCleaned[, -length(names(testCleaned))])
+result
+```
