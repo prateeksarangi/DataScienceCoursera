@@ -3,8 +3,8 @@ title: "Practical Machine Learning Report"
 author: "Prateek Sarangi"
 date: "08/04/2020"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
