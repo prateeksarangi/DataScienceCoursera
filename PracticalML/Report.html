@@ -436,6 +436,55 @@ testData &lt;- trainCleaned[-inTrain, ]</code></pre>
 </div>
 <div id="modeling-the-predictive-algorithm" class="section level2">
 <h2>Modeling the predictive algorithm</h2>
+<ul>
+<li>For this dataset, I will be using <strong>Random Forest</strong>, as this algorithm automatically prioretise the features which are more relevent to the prediction and predict the output accordingly.<br />
+</li>
+<li><strong>Random Forest</strong> or <strong>Random Decision Forests</strong> are an <strong>Ensemble Learning</strong> method for classification, regression and other tasks that operate by constructing a multitude of decision trees at training time and outputting the class that is the mode of the classes or mean prediction of the individual trees.</li>
+</ul>
+<pre class="r"><code>library(randomForest)</code></pre>
+<pre><code>## randomForest 4.6-14</code></pre>
+<pre><code>## Type rfNews() to see new features/changes/bug fixes.</code></pre>
+<pre class="r"><code>model &lt;- randomForest(trainData$classe ~ ., data = trainData, ntree = 500, mtry = 6, importance = TRUE)
+print(model)</code></pre>
+<pre><code>## 
+## Call:
+##  randomForest(formula = trainData$classe ~ ., data = trainData,      ntree = 500, mtry = 6, importance = TRUE) 
+##                Type of random forest: classification
+##                      Number of trees: 500
+## No. of variables tried at each split: 6
+## 
+##         OOB estimate of  error rate: 0.54%
+## Confusion matrix:
+##      A    B    C    D    E  class.error
+## A 3873    2    0    1    0 0.0007739938
+## B   11 2643    6    0    0 0.0063909774
+## C    0   13 2376    1    0 0.0058577406
+## D    0    0   29 2237    3 0.0141031291
+## E    0    0    2    6 2532 0.0031496063</code></pre>
+<ul>
+<li>Then we estimate the erformance of the model on the test set.</li>
+</ul>
+<pre class="r"><code>predValid &lt;- predict(model, testData, type = &quot;class&quot;)
+ValAcc &lt;- mean(predValid == testData$classe)*100
+sprintf(&quot;Validation Accuracy of the model is:- %f&quot;, ValAcc)</code></pre>
+<pre><code>## [1] &quot;Validation Accuracy of the model is:- 99.439443&quot;</code></pre>
+<pre class="r"><code>table(predValid,testData$classe)</code></pre>
+<pre><code>##          
+## predValid    A    B    C    D    E
+##         A 1704    6    0    0    0
+##         B    0 1130    3    0    0
+##         C    0    1 1027   16    1
+##         D    0    0    2  930    3
+##         E    0    0    0    1 1063</code></pre>
+</div>
+<div id="predict-the-dataset-on-test-data-provided" class="section level2">
+<h2>Predict the dataset on test data provided</h2>
+<p>Now, we apply the model to the original testing data set downloaded from the data source.</p>
+<pre class="r"><code>result &lt;- predict(model, validationCleaned[, -length(names(validationCleaned))])
+print(result)</code></pre>
+<pre><code>##  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20 
+##  B  A  B  A  A  E  D  B  A  A  B  C  B  A  E  E  A  B  B  B 
+## Levels: A B C D E</code></pre>
 </div>
 
 

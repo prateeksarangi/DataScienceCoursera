@@ -2,7 +2,9 @@
 title: "Practical Machine Learning Report"
 author: "Prateek Sarangi"
 date: "08/04/2020"
-output: html_document
+output:
+  pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
@@ -95,6 +97,6 @@ table(predValid,testData$classe)
 ## Predict the dataset on test data provided  
 Now, we apply the model to the original testing data set downloaded from the data source.  
 ```{r}
-result <- predict(model, testCleaned[, -length(names(testCleaned))])
-result
+result <- predict(model, validationCleaned[, -length(names(validationCleaned))])
+print(result)
 ```
