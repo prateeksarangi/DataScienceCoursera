@@ -399,16 +399,43 @@ trainingData &lt;- training[, setdiff(x = names(training), y = na_var)]
 dim(trainingData)</code></pre>
 <pre><code>## [1] 19622    93</code></pre>
 </div>
-<div id="removing-nas-from-test-data" class="section level3">
-<h3>Removing NA’s from test data</h3>
-<pre class="r"><code>testing &lt;- read.csv(&quot;pml-testing.csv&quot;)
-na_info &lt;- colSums(is.na(testing))
+<div id="removing-nas-from-validation-data" class="section level3">
+<h3>Removing NA’s from validation data</h3>
+<pre class="r"><code>validation &lt;- read.csv(&quot;pml-testing.csv&quot;)
+na_info &lt;- colSums(is.na(validation))
 na_var &lt;- names((na_info[na_info &gt; 0]))
-testingData &lt;- testing[, setdiff(x = names(testing), y = na_var)]
+validationData &lt;- validation[, setdiff(x = names(validation), y = na_var)]
 
-dim(testingData)</code></pre>
+dim(validationData)</code></pre>
 <pre><code>## [1] 20 60</code></pre>
 </div>
+<div id="removing-the-column-with-less-contribution-to-the-feature-set" class="section level3">
+<h3>Removing the column with less contribution to the feature set</h3>
+<pre class="r"><code>#For training set
+classe &lt;- trainingData$classe
+trainRemove &lt;- grepl(&quot;^X|timestamp|window&quot;, names(trainingData))
+trainingData &lt;- trainingData[, !trainRemove]
+trainCleaned &lt;- trainingData[, sapply(trainingData, is.numeric)]
+trainCleaned$classe &lt;- classe
+
+#For validation set
+validationRemove &lt;- grepl(&quot;^X|timestamp|window&quot;, names(validationData))
+validationData &lt;- validationData[, !validationRemove]
+validationCleaned &lt;- validationData[, sapply(validationData, is.numeric)]</code></pre>
+<p>Now we are left with 53 features of training and validation set on which we can train our <strong>Predictive Algorithms</strong>.</p>
+</div>
+<div id="splitting-the-data-into-training-and-test-set" class="section level3">
+<h3>Splitting the data into training and test set</h3>
+<p>We split the dataset into <strong>70%</strong> training and <strong>30%</strong> test set so that we can train our model on the 70% dataset and cross-validate it with the rest 30% of remaining dataset.<br />
+For reproducibality I have set the generation of random numbers to be fixed every time the code is executed.</p>
+<pre class="r"><code>smp_size &lt;- floor(0.70 * nrow(trainCleaned))
+inTrain &lt;- sample(seq_len(nrow(trainCleaned)), size = smp_size)
+trainData &lt;- trainCleaned[inTrain, ]
+testData &lt;- trainCleaned[-inTrain, ]</code></pre>
+</div>
+</div>
+<div id="modeling-the-predictive-algorithm" class="section level2">
+<h2>Modeling the predictive algorithm</h2>
 </div>
 
 

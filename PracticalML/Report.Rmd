@@ -32,12 +32,50 @@ trainingData <- training[, setdiff(x = names(training), y = na_var)]
 dim(trainingData)
 ```
 
-### Removing NA's from test data
+### Removing NA's from validation data
 ```{r}
-testing <- read.csv("pml-testing.csv")
-na_info <- colSums(is.na(testing))
+validation <- read.csv("pml-testing.csv")
+na_info <- colSums(is.na(validation))
 na_var <- names((na_info[na_info > 0]))
-testingData <- testing[, setdiff(x = names(testing), y = na_var)]
+validationData <- validation[, setdiff(x = names(validation), y = na_var)]
 
-dim(testingData)
+dim(validationData)
 ```
+
+### Removing the column with less contribution to the feature set  
+```{r}
+#For training set
+classe <- trainingData$classe
+trainRemove <- grepl("^X|timestamp|window", names(trainingData))
+trainingData <- trainingData[, !trainRemove]
+trainCleaned <- trainingData[, sapply(trainingData, is.numeric)]
+trainCleaned$classe <- classe
+
+#For validation set
+validationRemove <- grepl("^X|timestamp|window", names(validationData))
+validationData <- validationData[, !validationRemove]
+validationCleaned <- validationData[, sapply(validationData, is.numeric)]
+```
+Now we are left with 53 features of training and validation set on which we can train our **Predictive Algorithms**.  
+
+### Splitting the data into training and test set  
+We split the dataset into **70%** training and **30%** test set so that we can train our model on the 70% dataset and cross-validate it with the rest 30% of remaining dataset.  
+For reproducibality I have set the generation of random numbers to be fixed every time the code is executed.  
+```{r}
+smp_size <- floor(0.70 * nrow(trainCleaned))
+inTrain <- sample(seq_len(nrow(trainCleaned)), size = smp_size)
+trainData <- trainCleaned[inTrain, ]
+testData <- trainCleaned[-inTrain, ]
+```
+
+## Modeling the predictive algorithm  
+
+
+
+
+
+
+
+
+
+
