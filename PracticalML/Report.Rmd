@@ -1,0 +1,43 @@
+---
+title: "Practical Machine Learning Report"
+author: "Prateek Sarangi"
+date: "08/04/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## About the dataset.  
+### Context  
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. Our goal here will be to use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants. They were asked to perform barbell lifts correctly and incorrectly in 5 different ways. More information is available from the website here:  
+Link:- http://groupware.les.inf.puc-rio.br/har (see the section on the Weight Lifting Exercise Dataset).  
+
+### Content  
+The dataset contains about 160 predictors (most of which are not required) and classifiers column is 'classe' and the exercise pattern is classified into 5 types- A, B, C, D, E.  
+
+### Acknowledgements  
+Velloso, E.; Bulling, A.; Gellersen, H.; Ugulino, W.; Fuks, H. Qualitative Activity Recognition of Weight Lifting Exercises. Proceedings of 4th International Conference in Cooperation with SIGCHI (Augmented Human '13) . Stuttgart, Germany: ACM SIGCHI, 2013.  
+Read more: http://groupware.les.inf.puc-rio.br/har#wle_paper_section#ixzz4dPxKFugX
+
+## Data cleaning and preprocessing
+### Removing NA's from training data  
+```{r}
+training <- read.csv("pml-training.csv")
+na_info <- colSums(is.na(training))
+na_var <- names((na_info[na_info > 0]))
+trainingData <- training[, setdiff(x = names(training), y = na_var)]
+
+dim(trainingData)
+```
+
+### Removing NA's from test data
+```{r}
+testing <- read.csv("pml-testing.csv")
+na_info <- colSums(is.na(testing))
+na_var <- names((na_info[na_info > 0]))
+testingData <- testing[, setdiff(x = names(testing), y = na_var)]
+
+dim(testingData)
+```
