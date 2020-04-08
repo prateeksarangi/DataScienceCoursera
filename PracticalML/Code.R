@@ -1,40 +1,43 @@
 training <- read.csv("pml-training.csv")
-testing <- read.csv("pml-testing.csv")
-
-#Cleaning the training data.
 na_info <- colSums(is.na(training))
-length(names(na_info[na_info > 0]))
-length(names(na_info[na_info > 19000]))
-
 na_var <- names((na_info[na_info > 0]))
-cat(paste("Type of na_var = ", class(na_var)))
 trainingData <- training[, setdiff(x = names(training), y = na_var)]
-cat(paste("\n NA Count = ", sum(is.na(trainingData))))
-cat(paste("\n records = ", nrow(trainingData)))
-cat(paste("\n variables =", ncol(trainingData)))
 
-summary(trainingData)
+dim(trainingData)
 
-library(h2o)
-h2o.init(ip = 'localhost', port = 1080, max_mem_size = '1g')
-trainingData.hex <- as.h2o(x = trainingData, destination_frame = "trainingData.hex")
-head(trainingData.hex)
-
-#Cleaning the testing data.
-na_info <- colSums(is.na(testing))
-length(names(na_info[na_info > 0]))
-length(names(na_info[na_info > 19000]))
-
+validation <- read.csv("pml-testing.csv")
+na_info <- colSums(is.na(validation))
 na_var <- names((na_info[na_info > 0]))
-cat(paste("Type of na_var = ", class(na_var)))
-testingData <- testing[, setdiff(x = names(testing), y = na_var)]
-cat(paste("\n NA Count = ", sum(is.na(testingData))))
-cat(paste("\n records = ", nrow(testingData)))
-cat(paste("\n variables =", ncol(testingData)))
+validationData <- validation[, setdiff(x = names(validation), y = na_var)]
 
-summary(testingData)
+dim(validationData)
 
-library(h2o)
-h2o.init(ip = 'localhost', port = 1080, max_mem_size = '1g')
-testingData.hex <- as.h2o(x = testingData, destination_frame = "testingData.hex")
-head(testingData.hex)
+
+#For training set
+classe <- trainingData$classe
+trainRemove <- grepl("^X|timestamp|window", names(trainingData))
+trainingData <- trainingData[, !trainRemove]
+trainCleaned <- trainingData[, sapply(trainingData, is.numeric)]
+trainCleaned$classe <- classe
+
+#For validation set
+validationRemove <- grepl("^X|timestamp|window", names(validationData))
+validationData <- validationData[, !validationRemove]
+validationCleaned <- validationData[, sapply(validationData, is.numeric)]
+
+smp_size <- floor(0.70 * nrow(trainCleaned))
+inTrain <- sample(seq_len(nrow(trainCleaned)), size = smp_size)
+trainData <- trainCleaned[inTrain, ]
+testData <- trainCleaned[-inTrain, ]
+
+library(randomForest)
+model <- randomForest(trainData$classe ~ ., data = trainData, ntree = 500, mtry = 6, importance = TRUE)
+print(model)
+
+predValid <- predict(model, testData, type = "class")
+ValAcc <- mean(predValid == testData$classe)*100
+sprintf("Validation Accuracy of the model is:- %f", ValAcc)
+table(predValid,testData$classe)
+
+result <- predict(model, validationCleaned[, -length(names(validationCleaned))])
+print(result)
