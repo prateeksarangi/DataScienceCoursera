@@ -11,7 +11,6 @@ shinyUI(
                                                   "Displacement (cu.in.)" = "disp",
                                                   "Gross horsepower" = "hp",
                                                   "Rear axle ratio" = "drat",
-                                                  
                                                   "Weight (lb/1000)" = "wt",
                                                   
                                                   "1/4 mile time" = "qsec",
