@@ -86,10 +86,8 @@ shinyUI(
                                  " for 32 automobiles (1973-74 models)."),
                         
                         h3("Format"),
-                        
                         p("A data frame with 32 observations on 11 variables."),
                         p("  [, 1]   mpg         Miles/(US) gallon"),
-                        
                         p("  [, 2]	 cyl	 Number of cylinders"),
                         p("  [, 3]	 disp	 Displacement (cu.in.)"),
                         p("  [, 4]	 hp	 Gross horsepower"),
