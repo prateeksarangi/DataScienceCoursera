@@ -1,7 +1,6 @@
 library(shiny)
 shinyUI(
     navbarPage("Shiny Application",
-               
                tabPanel("Analysis",
                         
                         fluidPage(
