@@ -18,9 +18,6 @@ shinyUI(
                                                   "Number of forward gears" = "gear",
                                                   "Number of carburetors" = "carb"
                                                 )),
-                                    
-                                    
-                                    
                                     checkboxInput("outliers", "Show BoxPlot's outliers", FALSE)
                                     
                                 ),
