@@ -15,7 +15,6 @@ shinyUI(
                                                   "1/4 mile time" = "qsec",
                                                   "V/S" = "vs",
                                                   "Transmission" = "am",
-                                                  
                                                   "Number of forward gears" = "gear",
                                                   
                                                   "Number of carburetors" = "carb"
