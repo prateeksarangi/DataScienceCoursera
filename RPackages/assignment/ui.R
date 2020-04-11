@@ -106,7 +106,6 @@ shinyUI(
                         p("  [, 7]	 qsec	 1/4 mile time"),
                         
                         p("  [, 8]	 vs	 V/S"),
-                        
                         p("  [, 9]	 am	 Transmission (0 = automatic, 1 = manual)"),
                         p("  [,10]	 gear	 Number of forward gears"),
                         p("  [,11]	 carb	 Number of carburetors"),
