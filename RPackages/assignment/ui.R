@@ -6,7 +6,6 @@ shinyUI(
                             titlePanel("The relationship between variables and miles per gallon (MPG)"),
                             sidebarLayout(
                                 sidebarPanel(
-                                    
                                     selectInput("variable", "Variable:",
                                                 
                                                 c("Number of cylinders" = "cyl",
