@@ -19,7 +19,6 @@ shinyUI(
                                                   "Number of carburetors" = "carb"
                                                 )),
                                     checkboxInput("outliers", "Show BoxPlot's outliers", FALSE)
-                                    
                                 ),
                                 
                                 
