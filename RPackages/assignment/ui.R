@@ -102,7 +102,6 @@ shinyUI(
                         p("  [, 5]	 drat	 Rear axle ratio"),
                         
                         p("  [, 6]	 wt	 Weight (lb/1000)"),
-                        
                         p("  [, 7]	 qsec	 1/4 mile time"),
                         p("  [, 8]	 vs	 V/S"),
                         p("  [, 9]	 am	 Transmission (0 = automatic, 1 = manual)"),
