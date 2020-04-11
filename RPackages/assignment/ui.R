@@ -119,7 +119,6 @@ shinyUI(
                         h4("I hope you could understand the app")
                         
                )
-               
     )
     
 )
