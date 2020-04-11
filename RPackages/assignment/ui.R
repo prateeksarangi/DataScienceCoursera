@@ -116,7 +116,6 @@ shinyUI(
                tabPanel("Go back to my Github repository",
                         
                         a("https://github.com/prateeksarangi/DataScienceCoursera/tree/master/RPackages"),
-                        
                         hr(),
                         h4("I hope you could understand the app")
                         
