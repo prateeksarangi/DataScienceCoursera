@@ -8,16 +8,9 @@ About the application
 ========================================================
 This Shiny app allows a user to specify a distribution, and generates a histogram of this distribution. Additionally, a user can specify the number of observations in the distribution, the number of bins in which to split the observations into, the mean, and the standard deviation.
 
-About types of distributions used
+Working of the application
 ========================================================
-- Normal distribution  
-In probability theory, the normal distribution is a very common continuous probability distribution. Normal distributions are important in statistics and are often used in the natural and social sciences to represent real-valued random variables whose distributions are not known. A random variable with a Gaussian distribution is said to be normally distributed and is called a normal deviate.  
 
-- Uniform distribution  
-In probability theory and statistics, the continuous uniform distribution or rectangular distribution is a family of symmetric probability distributions. The distribution describes an experiment where there is an arbitrary outcome that lies between certain bounds. The bounds are defined by the parameters, a and b, which are the minimum and maximum values. The interval can be either closed or open. Therefore, the distribution is often abbreviated U, where U stands for uniform distribution. The difference between the bounds defines the interval length; all intervals of the same length on the distribution's support are equally probable. It is the maximum entropy probability distribution for a random variable X under no constraint other than that it is contained in the distribution's support.
-
-- Exponential distribution  
-In probability theory and statistics, the exponential distribution is the probability distribution of the time between events in a Poisson point process, i.e., a process in which events occur continuously and independently at a constant average rate. It is a particular case of the gamma distribution. It is the continuous analogue of the geometric distribution, and it has the key property of being memoryless. In addition to being used for the analysis of Poisson point processes it is found in various other contexts. The exponential distribution is not the same as the class of exponential families of distributions, which is a large class of probability distributions that includes the exponential distribution as one of its members, but also includes the normal distribution, binomial distribution, gamma distribution, Poisson, and many others
 
 Working of the application
 ========================================================
