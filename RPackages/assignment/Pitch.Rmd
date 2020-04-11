@@ -17,7 +17,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 
 
-- URL: *https://github.com/windy024/Developing_Data_Product*
+- URL: *https://github.com/prateeksarangi/DataScienceCoursera/tree/master/RPackages*
 
 - Find here all the data that have been use for this presentation and also for the first part of the data Science Project: "First, you will create a Shiny application and deploy it on Rstudio's servers.Second, you will use Slidify or Rstudio Presenter to prepare a reproducible pitch presentation about your application."
 
