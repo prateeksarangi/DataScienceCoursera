@@ -10,7 +10,6 @@ shinyUI(
                                                 c("Number of cylinders" = "cyl",
                                                   "Displacement (cu.in.)" = "disp",
                                                   "Gross horsepower" = "hp",
-                                                  
                                                   "Rear axle ratio" = "drat",
                                                   
                                                   "Weight (lb/1000)" = "wt",
