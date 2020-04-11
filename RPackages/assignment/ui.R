@@ -2,7 +2,6 @@ library(shiny)
 shinyUI(
     navbarPage("Shiny Application",
                tabPanel("Analysis",
-                        
                         fluidPage(
                             
                             titlePanel("The relationship between variables and miles per gallon (MPG)"),
