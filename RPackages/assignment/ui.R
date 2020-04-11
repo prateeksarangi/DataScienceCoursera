@@ -23,9 +23,7 @@ shinyUI(
                                 mainPanel(
                                     h3(textOutput("caption")),
                                     tabsetPanel(type = "tabs", 
-                                                
                                                 tabPanel("BoxPlot", plotOutput("mpgBoxPlot")),
-                                                
                                                 tabPanel("Regression model", 
                                                          
                                                          plotOutput("mpgPlot"),
