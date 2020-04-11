@@ -88,9 +88,6 @@ shinyUI(
                         h3("Format"),
                         
                         p("A data frame with 32 observations on 11 variables."),
-                        
-                        
-                        
                         p("  [, 1]   mpg         Miles/(US) gallon"),
                         
                         p("  [, 2]	 cyl	 Number of cylinders"),
