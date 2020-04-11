@@ -25,9 +25,7 @@ shinyUI(
                                     tabsetPanel(type = "tabs", 
                                                 tabPanel("BoxPlot", plotOutput("mpgBoxPlot")),
                                                 tabPanel("Regression model", 
-                                                         
                                                          plotOutput("mpgPlot"),
-                                                         
                                                          verbatimTextOutput("fit")
                                                          
                                                 )
