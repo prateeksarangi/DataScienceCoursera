@@ -133,21 +133,11 @@ shinyUI(
                         p("  [, 8]	 vs	 V/S"),
                         
                         p("  [, 9]	 am	 Transmission (0 = automatic, 1 = manual)"),
-                        
                         p("  [,10]	 gear	 Number of forward gears"),
-                        
                         p("  [,11]	 carb	 Number of carburetors"),
-                        
-                        
-                        
                         h3("Source"),
-                        
-                        
-                        
                         p("Henderson and Velleman (1981), Building multiple regression models interactively. Biometrics, 37, 391-411.")
-                        
                ),
-               
                tabPanel("Go back to my Github repository",
                         
                         a("https://github.com/prateeksarangi/DataScienceCoursera/tree/master/RPackages"),
