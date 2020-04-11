@@ -1,0 +1,13 @@
+name: assignment
+title: assignment
+username:
+account: prateeksarangi80
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 2099501
+bundleId: 2999866
+url: https://prateeksarangi80.shinyapps.io/assignment/
+when: 1586609485.3964
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Pitch.html|Pitch.Rmd
