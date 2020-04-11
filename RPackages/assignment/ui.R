@@ -96,7 +96,6 @@ shinyUI(
                         p("  [, 2]	 cyl	 Number of cylinders"),
                         
                         p("  [, 3]	 disp	 Displacement (cu.in.)"),
-                        
                         p("  [, 4]	 hp	 Gross horsepower"),
                         p("  [, 5]	 drat	 Rear axle ratio"),
                         p("  [, 6]	 wt	 Weight (lb/1000)"),
