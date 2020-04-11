@@ -20,11 +20,7 @@ shinyUI(
                                                 )),
                                     checkboxInput("outliers", "Show BoxPlot's outliers", FALSE)
                                 ),
-                                
-                                
-                                
                                 mainPanel(
-                                    
                                     h3(textOutput("caption")),
                                     
                                     
