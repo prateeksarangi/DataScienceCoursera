@@ -8,7 +8,6 @@ shinyUI(
                                 sidebarPanel(
                                     selectInput("variable", "Variable:",
                                                 c("Number of cylinders" = "cyl",
-                                                  
                                                   "Displacement (cu.in.)" = "disp",
                                                   
                                                   "Gross horsepower" = "hp",
