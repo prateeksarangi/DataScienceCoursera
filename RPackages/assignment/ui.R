@@ -98,7 +98,6 @@ shinyUI(
                         p("  [, 3]	 disp	 Displacement (cu.in.)"),
                         
                         p("  [, 4]	 hp	 Gross horsepower"),
-                        
                         p("  [, 5]	 drat	 Rear axle ratio"),
                         p("  [, 6]	 wt	 Weight (lb/1000)"),
                         p("  [, 7]	 qsec	 1/4 mile time"),
